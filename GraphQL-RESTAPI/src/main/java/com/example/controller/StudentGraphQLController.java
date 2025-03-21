@@ -1,4 +1,4 @@
-package com.example.graphql;
+package com.example.controller;
 
 import com.example.request.StudentRequest;
 import com.example.response.StudentResponse;

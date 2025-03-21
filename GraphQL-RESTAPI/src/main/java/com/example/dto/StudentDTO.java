@@ -1,13 +1,11 @@
 package com.example.dto;
 
 import com.example.entity.Student;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentDTO {
@@ -16,14 +14,13 @@ public class StudentDTO {
     private String lastName;
     private String email;
     private AddressDTO address;
-    private String fullName;
 
     public StudentDTO(Student student) {
+        if (student == null) return;
         this.id = student.getId();
         this.firstName = student.getFirstName();
         this.lastName = student.getLastName();
         this.email = student.getEmail();
-        this.fullName = student.getFirstName() + " " + student.getLastName();
 
         if (student.getAddress() != null) {
             this.address = new AddressDTO(student.getAddress());

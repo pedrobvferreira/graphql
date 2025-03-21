@@ -1,6 +1,6 @@
 package com.example.enums;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Arrays;
 
 public enum SubjectNameFilter {
     ALL,
@@ -9,9 +9,9 @@ public enum SubjectNameFilter {
     MONGODB;
 
     public static SubjectNameFilter fromString(String value) {
-        if (StringUtils.isBlank(value)) {
-            return ALL;
-        }
-        return SubjectNameFilter.valueOf(value.toUpperCase());
+        return Arrays.stream(SubjectNameFilter.values())
+                .filter(e -> e.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElse(ALL);
     }
 }

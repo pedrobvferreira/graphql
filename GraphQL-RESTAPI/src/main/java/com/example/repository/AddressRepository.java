@@ -8,4 +8,5 @@ import com.example.entity.Address;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
+    Address findByStudentId(Long studentId);
 }

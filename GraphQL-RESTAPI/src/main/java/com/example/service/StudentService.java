@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.dto.StudentDTO;
 import com.example.request.StudentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,46 +28,45 @@ public class StudentService {
 	
 	@Autowired
 	StudentRepository studentRepository;
-	
-	public Student getStudentById (long id) {
-		return studentRepository.findById(id).orElse(null);
+
+	public StudentDTO getStudentById(Long id) {
+		Student student = studentRepository.findById(id).orElse(null);
+		return new StudentDTO(student);
 	}
-	
-	public Student createStudent (StudentRequest request) {
+
+	public StudentDTO createStudent(StudentRequest request) {
 		Student student = new Student();
 		student.setFirstName(request.getFirstName());
 		student.setLastName(request.getLastName());
 		student.setEmail(request.getEmail());
-		
+
 		Address address = new Address();
 		address.setStreet(request.getStreet());
 		address.setCity(request.getCity());
-		
 		address = addressRepository.save(address);
-		
 		student.setAddress(address);
+
 		student = studentRepository.save(student);
 		
-		List<Subject> subjectsList = new ArrayList<>();
-		
 		if(request.getLearningSubjects() != null) {
-			for (SubjectRequest subjectRequest: request.getLearningSubjects()) {
+			Student finalStudent = student;
+			List<Subject> subjectsList = request.getLearningSubjects().stream().map(subjectRequest -> {
 				Subject subject = new Subject();
-				subject.setSubjectName(subjectRequest.getSubjectName());
+				subject.setSubjectName(subjectRequest.getSubjectName().toUpperCase());
 				subject.setMarksObtained(subjectRequest.getMarksObtained());
-				subject.setStudent(student);
-				
-				subjectsList.add(subject);
-			}
+				subject.setStudent(finalStudent);
+				return subject;
+			}).collect(Collectors.toList());
+
 			subjectRepository.saveAll(subjectsList);
+			student.setLearningSubjects(subjectsList);
 		}
-		student.setLearningSubjects(subjectsList);
-		
-		return student;
+
+		return new StudentDTO(student);
 	}
 
-	public Student updateStudent(Long id, StudentRequest request) {
-		Student student = getStudentById(id);
+	public StudentDTO updateStudent(Long id, StudentRequest request) {
+		Student student = studentRepository.findById(id).orElse(null);
 		if (student != null) {
 			if (request.getFirstName() != null) student.setFirstName(request.getFirstName());
 			if (request.getLastName() != null) student.setLastName(request.getLastName());
@@ -84,7 +84,7 @@ public class StudentService {
 			// Atualizar assuntos (Subjects)
 			if (request.getLearningSubjects() != null) {
 				Student finalStudent = student;
-				List<Subject> updatedSubjects = request.getLearningSubjects().stream().map(subjectRequest -> {
+				List<Subject> subjectsList = request.getLearningSubjects().stream().map(subjectRequest -> {
 					Subject subject = new Subject();
 					subject.setSubjectName(subjectRequest.getSubjectName());
 					subject.setMarksObtained(subjectRequest.getMarksObtained());
@@ -94,11 +94,11 @@ public class StudentService {
 
 				// Remover os assuntos antigos e salvar os novos
 				subjectRepository.deleteAll(student.getLearningSubjects());
-				subjectRepository.saveAll(updatedSubjects);
-				student.setLearningSubjects(updatedSubjects);
+				subjectRepository.saveAll(subjectsList);
+				student.setLearningSubjects(subjectsList);
 			}
 		}
-		return student;
+		return new StudentDTO(student);
 	}
 
 	public Boolean deleteStudent(Long id) {
@@ -108,15 +108,13 @@ public class StudentService {
 
 		Student student = studentRepository.findById(id).orElse(null);
 		if (student != null) {
-			// Deletar os assuntos (Subjects)
+			// Apagar os assuntos (Subjects)
 			subjectRepository.deleteAll(student.getLearningSubjects());
-
-			// Deletar o endereço (Address)
+			// Apagar o endereço (Address)
 			if (student.getAddress() != null) {
 				addressRepository.delete(student.getAddress());
 			}
-
-			// Deletar o próprio estudante
+			// Apagar o próprio estudante
 			studentRepository.delete(student);
 			return true;
 		}

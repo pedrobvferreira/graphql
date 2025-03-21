@@ -1,14 +1,15 @@
-package com.example.rest;
+package com.example.controller;
 
 import com.example.request.StudentRequest;
 import com.example.response.StudentResponse;
 import com.example.service.StudentService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/students")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StudentRestController {
 
     private final StudentService studentService;

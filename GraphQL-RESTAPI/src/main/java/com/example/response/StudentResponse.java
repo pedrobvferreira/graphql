@@ -1,9 +1,11 @@
 package com.example.response;
 
-import com.example.entity.Student;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.dto.AddressDTO;
+import com.example.dto.StudentDTO;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -13,23 +15,14 @@ public class StudentResponse {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private String street;
-	private String city;
-
-	@JsonIgnore
-	private transient Student student;
+	private AddressDTO address;
+	private List<SubjectResponse> learningSubjects;
 	
-	public StudentResponse (Student student) {
-		this.student = student;
+	public StudentResponse (StudentDTO student) {
 		this.id = student.getId();
 		this.firstName = student.getFirstName();
 		this.lastName = student.getLastName();
 		this.email = student.getEmail();
-
-		if (student.getAddress() != null) {
-			this.street = student.getAddress().getStreet();
-			this.city = student.getAddress().getCity();
-		}
 	}
 
 }
