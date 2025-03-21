@@ -1,7 +1,4 @@
 type Query {
-	firstQuery : String
-	secondQuery : String
-	fullName(sampleRequest : SampleRequest) : String
 	getStudent(id : ID!) : StudentResponse
 }
 

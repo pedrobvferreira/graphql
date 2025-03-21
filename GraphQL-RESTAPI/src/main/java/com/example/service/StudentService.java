@@ -49,8 +49,8 @@ public class StudentService {
 		
 		List<Subject> subjectsList = new ArrayList<>();
 		
-		if(request.getSubjectsLearning() != null) {
-			for (SubjectRequest subjectRequest: request.getSubjectsLearning()) {
+		if(request.getLearningSubjects() != null) {
+			for (SubjectRequest subjectRequest: request.getLearningSubjects()) {
 				Subject subject = new Subject();
 				subject.setSubjectName(subjectRequest.getSubjectName());
 				subject.setMarksObtained(subjectRequest.getMarksObtained());
@@ -82,9 +82,9 @@ public class StudentService {
 			student = studentRepository.save(student);
 
 			// Atualizar assuntos (Subjects)
-			if (request.getSubjectsLearning() != null) {
+			if (request.getLearningSubjects() != null) {
 				Student finalStudent = student;
-				List<Subject> updatedSubjects = request.getSubjectsLearning().stream().map(subjectRequest -> {
+				List<Subject> updatedSubjects = request.getLearningSubjects().stream().map(subjectRequest -> {
 					Subject subject = new Subject();
 					subject.setSubjectName(subjectRequest.getSubjectName());
 					subject.setMarksObtained(subjectRequest.getMarksObtained());

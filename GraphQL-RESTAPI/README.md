@@ -37,8 +37,9 @@ query {
 Exemplo JSON (corpo da requisição):
 ```JSON
 {
-  "query": "query { getStudent(id: "1") { id firstName lastName email fullName learningSubjects(subjectNameFilter: \"Java\") { id subjectName marksObtained } } }"
+  "query": "query { getStudent(id: \"1\") { id firstName lastName email fullName learningSubjects(subjectNameFilter: Java) { id subjectName marksObtained } } }"
 }
+
 ```
 
 ✅ **Explicação dos Campos:**
@@ -113,7 +114,64 @@ A mutação retorna o `id`, `firstName`, `lastName`, `email` e a lista de discip
 
 ---
 
-3️⃣
+### 3️⃣ Atualizar Estudante
+
+Exemplo GraphQL:
+```graphql
+mutation {
+    updateStudent(
+        id: "1", 
+        studentRequest: {
+            firstName: "Jane"
+            lastName: "Smith"
+            email: "jane.smith@example.com"
+            street: "456 Elm St"
+            city: "San Francisco"
+            subjectsLearning: [
+                {
+                    subjectName: "Spring Boot"
+                    marksObtained: 92.0
+                },
+                {
+                    subjectName: "GraphQL"
+                    marksObtained: 88.5
+                }
+            ]
+        }
+    ) {
+        id
+        firstName
+        lastName
+        email
+        learningSubjects {
+            subjectName
+            marksObtained
+        }
+    }
+}
+```
+
+Exemplo JSON
+```JSON
+{
+  "query": "mutation { updateStudent(id: \"1\", studentRequest: { firstName: \"Jane\", lastName: \"Smith\", email: \"jane.smith@example.com\", street: \"456 Elm St\", city: \"San Francisco\", subjectsLearning: [ { subjectName: \"Spring Boot\", marksObtained: 92.0 }, { subjectName: \"GraphQL\", marksObtained: 88.5 } ] }) { id firstName lastName email learningSubjects { subjectName marksObtained } } }"
+}
+```
+
+### 4️⃣ Excluir Estudante
+Exemplo GraphQL:
+```graphql
+mutation {
+    deleteStudent(id: "1")
+}
+```
+
+Exemplo JSON
+```JSON
+{
+  "query": "mutation { deleteStudent(id: \"1\") }"
+}
+```
 
 ---
 ## 📌 Como Testar as Consultas
