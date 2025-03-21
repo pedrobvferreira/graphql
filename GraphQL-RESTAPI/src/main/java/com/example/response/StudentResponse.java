@@ -1,6 +1,7 @@
 package com.example.response;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.entity.Student;
 
@@ -17,9 +18,11 @@ public class StudentResponse {
 	private String email;
 	private String street;
 	private String city;
-	private List<SubjectResponse> learningSubjects;
+
+	private Student student;
 	
 	public StudentResponse (Student student) {
+		this.student = student;
 		this.id = student.getId();
 		this.firstName = student.getFirstName();
 		this.lastName = student.getLastName();

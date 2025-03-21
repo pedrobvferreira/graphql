@@ -14,14 +14,16 @@ import java.util.stream.Collectors;
 public class StudentResponseResolver {
 
 	@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
-	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument SubjectNameFilter subjectNameFilter) {
-		if (studentResponse.getLearningSubjects() == null) {
+	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument String subjectNameFilter) {
+		if (studentResponse.getStudent() == null || studentResponse.getStudent().getLearningSubjects() == null) {
 			return List.of();
 		}
 
-		return studentResponse.getLearningSubjects().stream()
-				.filter(subject -> subjectNameFilter == SubjectNameFilter.ALL ||
-						subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name()))
+		SubjectNameFilter filter = SubjectNameFilter.fromString(subjectNameFilter);
+		return studentResponse.getStudent().getLearningSubjects().stream()
+				.filter(subject -> filter == SubjectNameFilter.ALL ||
+						subject.getSubjectName().equalsIgnoreCase(filter.name()))
+				.map(SubjectResponse::new)
 				.collect(Collectors.toList());
 	}
 
