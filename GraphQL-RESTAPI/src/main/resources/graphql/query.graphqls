@@ -2,11 +2,6 @@ type Query {
 	getStudent(id : ID!) : StudentResponse
 }
 
-input SampleRequest {
-	firstName : String!
-	lastName : String
-}
-
 type StudentResponse {
 	id : ID
 	firstName : String
