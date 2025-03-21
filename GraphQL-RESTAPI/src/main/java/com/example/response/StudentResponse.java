@@ -1,10 +1,7 @@
 package com.example.response;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.example.entity.Student;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +16,8 @@ public class StudentResponse {
 	private String street;
 	private String city;
 
-	private Student student;
+	@JsonIgnore
+	private transient Student student;
 	
 	public StudentResponse (Student student) {
 		this.student = student;
