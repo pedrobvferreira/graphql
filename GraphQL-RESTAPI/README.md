@@ -16,6 +16,7 @@ http://localhost:8080/graphql
 
 Essa consulta busca os detalhes de um estudante específico com base no `id` fornecido. Além disso, filtra as matérias com base no nome da disciplina.
 
+Exemplo GraphQL:
 ```graphql
 query {
     getStudent(id: "1") {
@@ -30,6 +31,13 @@ query {
             marksObtained
         }
     }
+}
+```
+
+Exemplo JSON (corpo da requisição):
+```JSON
+{
+  "query": "query { getStudent(id: "1") { id firstName lastName email fullName learningSubjects(subjectNameFilter: \"Java\") { id subjectName marksObtained } } }"
 }
 ```
 
@@ -52,6 +60,7 @@ query {
 
 Essa mutação permite criar um novo estudante com informações pessoais e disciplinas que ele está estudando.
 
+Exemplo GraphQL:
 ```graphql
 mutation {
     createStudent(studentRequest: {
@@ -82,6 +91,12 @@ mutation {
     }
 }
 ```
+Exemplo JSON:
+```JSON
+{
+  "query": "mutation { createStudent(studentRequest: { firstName: \"John\", lastName: \"Doe\", email: \"john.doe@example.com\", street: \"123 Main St\", city: \"New York\", subjectsLearning: [ { subjectName: \"Java\", marksObtained: 85.5 }, { subjectName: \"MySQL\", marksObtained: 90.0 } ] }) { id firstName lastName email learningSubjects { subjectName marksObtained } } }"
+}
+```
 
 ✅ **Explicação dos Campos:**
 - `firstName`: Primeiro nome do estudante.
@@ -105,7 +120,6 @@ A mutação retorna o `id`, `firstName`, `lastName`, `email` e a lista de discip
 
 Para testar essas queries e mutations, você pode utilizar ferramentas como:
 
-🔹 **GraphiQL** – Interface web interativa para testar GraphQL.  
 🔹 **Postman** – Permite testar GraphQL com uma interface amigável.  
 🔹 **Insomnia** – Cliente avançado para testar APIs GraphQL.
 
