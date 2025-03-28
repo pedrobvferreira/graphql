@@ -30,10 +30,12 @@ public class StudentResponseResolver {
 
 	/*@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
 	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument String subjectNameFilter) {
+		// 1. Ler argumento do enum
 		SubjectNameFilter filter = SubjectNameFilter.fromString(subjectNameFilter);
 
 		List<Subject> subjects;
 
+		// 2. Buscar os subjects com ou sem filtro
 		if (filter == SubjectNameFilter.ALL) {
 			// Se for ALL, traz todas as disciplinas do estudante
 			subjects = subjectRepository.findByStudentId(studentResponse.getId());
@@ -42,6 +44,7 @@ public class StudentResponseResolver {
 			subjects = subjectRepository.findByStudentIdAndSubjectName(studentResponse.getId(), filter.name().toUpperCase());
 		}
 
+		// 3. Retornar mapeado
 		return subjects.stream()
 				.map(SubjectResponse::new)
 				.collect(Collectors.toList());

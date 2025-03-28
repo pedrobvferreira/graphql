@@ -16,6 +16,10 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     List<Subject> findByStudentIdAndSubjectName(Long studentId, String subjectName);
 
+<<<<<<< HEAD
     @Query("SELECT s FROM Subject s JOIN s.student st WHERE st.id IN :studentIds")
+=======
+    @Query("SELECT DISTINCT s FROM Subject s JOIN s.student st WHERE st.id IN :studentIds")
+>>>>>>> 116c3ed (fix)
     List<Subject> findByStudentIds(@Param("studentIds") Set<Long> studentIds);
 }
