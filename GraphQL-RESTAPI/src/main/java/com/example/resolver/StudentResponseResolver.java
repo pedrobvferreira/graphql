@@ -9,7 +9,6 @@ import com.example.repository.SubjectRepository;
 import com.example.response.AddressResponse;
 import com.example.response.StudentResponse;
 import com.example.response.SubjectResponse;
-import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.DataLoader;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -17,7 +16,6 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -53,13 +51,10 @@ public class StudentResponseResolver {
 	@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
 	public CompletableFuture<List<SubjectResponse>> getLearningSubjects(
 			StudentResponse studentResponse,
-			@Argument String subjectNameFilter,
-			DataFetchingEnvironment env) {
-		DataLoader<Long, List<Subject>> dataLoader = Objects.requireNonNull(env.getDataLoader("subjectDataLoader"));
+			@Argument SubjectNameFilter filter,
+			DataLoader<Long, List<Subject>> subjectDataLoader) {
 
-		SubjectNameFilter filter = SubjectNameFilter.fromString(subjectNameFilter);
-
-		return dataLoader.load(studentResponse.getId())
+		return subjectDataLoader.load(studentResponse.getId())
 				.thenApply(subjects -> subjects.stream()
 						.filter(subject -> subject.getSubjectName().equalsIgnoreCase(filter.name()))
 						.map(SubjectResponse::new)

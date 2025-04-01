@@ -13,11 +13,11 @@ import org.springframework.graphql.execution.DataLoaderRegistrar;
 import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class GraphQLConfiguration {
 
-    private SubjectDataLoader subjectDataLoader;
+    private final SubjectDataLoader subjectDataLoader;
 
     @Bean
     public DataLoaderRegistrar dataLoaderRegistrar() {
@@ -25,8 +25,7 @@ public class GraphQLConfiguration {
             registry.register(
                     "subjectDataLoader",
                     DataLoaderFactory.newMappedDataLoader(
-                            subjectDataLoader.getLoader(),
-                            DataLoaderOptions.newOptions()
+                        subjectDataLoader.getLoader()
                     )
             );
         };
