@@ -2,6 +2,7 @@ package com.example.dataLoader;
 
 import com.example.entity.Subject;
 import com.example.repository.SubjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class SubjectDataLoader {
 
-    @Autowired
     private SubjectRepository subjectRepository;
 
     public MappedBatchLoader<Long, List<Subject>> getLoader() {

@@ -51,9 +51,10 @@ public class StudentResponseResolver {
 	}*/
 
 	@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
-	public CompletableFuture<List<SubjectResponse>> getLearningSubjects(StudentResponse studentResponse,
-																		@Argument String subjectNameFilter,
-																		DataFetchingEnvironment env) {
+	public CompletableFuture<List<SubjectResponse>> getLearningSubjects(
+			StudentResponse studentResponse,
+			@Argument String subjectNameFilter,
+			DataFetchingEnvironment env) {
 		DataLoader<Long, List<Subject>> dataLoader = Objects.requireNonNull(env.getDataLoader("subjectDataLoader"));
 
 		SubjectNameFilter filter = SubjectNameFilter.fromString(subjectNameFilter);
