@@ -3,8 +3,7 @@ package com.example.dataLoader;
 import com.example.entity.Subject;
 import com.example.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
-import org.dataloader.MappedBatchLoader;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dataloader.MappedBatchLoaderWithContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,11 +16,14 @@ public class SubjectDataLoader {
 
     private SubjectRepository subjectRepository;
 
-    public MappedBatchLoader<Long, List<Subject>> getLoader() {
-        return studentIds -> CompletableFuture.supplyAsync(() -> {
+    public MappedBatchLoaderWithContext<Long, List<Subject>> getLoader() {
+        return (studentIds, env) -> CompletableFuture.supplyAsync(() -> {
             List<Subject> subjects = subjectRepository.findByStudentIds(studentIds);
-            return subjects.stream()
-                    .collect(Collectors.groupingBy(subject -> subject.getStudent().getId()));
+
+            // Retorna um Map<studentId, List<Subject>>
+            return subjects.stream().collect(Collectors.groupingBy(
+                    subject -> subject.getStudent().getId()
+            ));
         });
     }
 }
