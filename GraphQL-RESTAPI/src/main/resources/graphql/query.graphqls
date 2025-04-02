@@ -8,7 +8,7 @@ type StudentResponse {
 	lastName : String
 	email : String
 	address: AddressResponse
-	learningSubjects(subjectNameFilter : SubjectNameFilter = All) : [SubjectResponse]
+	learningSubjects(subjectNameFilter : SubjectNameFilter) : [SubjectResponse]
 }
 
 type SubjectResponse {
