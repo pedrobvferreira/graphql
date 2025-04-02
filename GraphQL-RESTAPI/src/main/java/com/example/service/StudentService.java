@@ -1,21 +1,18 @@
 package com.example.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.example.dto.StudentDTO;
-import com.example.request.StudentRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.example.entity.Address;
 import com.example.entity.Student;
 import com.example.entity.Subject;
 import com.example.repository.AddressRepository;
 import com.example.repository.StudentRepository;
 import com.example.repository.SubjectRepository;
-import com.example.request.SubjectRequest;
+import com.example.request.StudentRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
