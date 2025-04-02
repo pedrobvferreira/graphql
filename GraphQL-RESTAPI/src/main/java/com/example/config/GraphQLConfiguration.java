@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.DataLoaderRegistrar;
 
+
 @Configuration
 @RequiredArgsConstructor
 public class GraphQLConfiguration {
