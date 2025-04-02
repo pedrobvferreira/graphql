@@ -1,7 +1,10 @@
 package com.example.dto;
 
 import com.example.entity.Student;
+import com.example.response.SubjectResponse;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +17,7 @@ public class StudentDTO {
     private String lastName;
     private String email;
     private AddressDTO address;
+    private List<SubjectResponse> learningSubjects;
 
     public StudentDTO(Student student) {
         if (student == null) return;
@@ -24,6 +28,12 @@ public class StudentDTO {
 
         if (student.getAddress() != null) {
             this.address = new AddressDTO(student.getAddress());
+        }
+
+        if (student.getLearningSubjects() != null) {
+            this.learningSubjects = student.getLearningSubjects().stream()
+                    .map(SubjectResponse::new)
+                    .toList();
         }
     }
 }

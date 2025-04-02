@@ -9,6 +9,7 @@ import com.example.repository.StudentRepository;
 import com.example.repository.SubjectRepository;
 import com.example.request.StudentRequest;
 import io.leangen.graphql.annotations.GraphQLArgument;
+import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class StudentService {
 		return new StudentDTO(student);
 	}
 
-	@GraphQLQuery(name = "createStudent")
+	@GraphQLMutation(name = "createStudent")
 	public StudentDTO createStudent(@GraphQLArgument(name = "studentRequest") StudentRequest request) {
 		Student student = new Student();
 		student.setFirstName(request.getFirstName());
@@ -68,7 +69,7 @@ public class StudentService {
 		return new StudentDTO(student);
 	}
 
-	@GraphQLQuery(name = "updateStudent")
+	@GraphQLMutation(name = "updateStudent")
 	public StudentDTO updateStudent(@GraphQLArgument(name = "id") Long id, @GraphQLArgument(name = "studentRequest") StudentRequest request) {
 		Student student = studentRepository.findById(id).orElse(null);
 		if (student != null) {
@@ -105,7 +106,7 @@ public class StudentService {
 		return new StudentDTO(student);
 	}
 
-	@GraphQLQuery(name = "deleteStudent")
+	@GraphQLMutation(name = "deleteStudent")
 	public Boolean deleteStudent(@GraphQLArgument(name = "id") Long id) {
 		if (!studentRepository.existsById(id)) {
 			return false;
