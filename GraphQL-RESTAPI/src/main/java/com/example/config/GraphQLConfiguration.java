@@ -23,10 +23,8 @@ public class GraphQLConfiguration {
     public DataLoaderRegistrar dataLoaderRegistrar() {
         return (registry, context) -> {
             registry.register(
-                    "subjectDataLoader",
-                    DataLoaderFactory.newMappedDataLoader(
-                        subjectDataLoader.getLoader()
-                    )
+               "subjectDataLoader",
+               DataLoaderFactory.newMappedDataLoader(subjectDataLoader.getLoader())
             );
         };
     }
