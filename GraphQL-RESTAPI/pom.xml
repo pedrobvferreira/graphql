@@ -71,6 +71,11 @@
 			<artifactId>spring-graphql-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>java-dataloader</artifactId>
+			<version>3.4.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

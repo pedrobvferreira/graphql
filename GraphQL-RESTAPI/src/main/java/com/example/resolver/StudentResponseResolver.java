@@ -9,6 +9,7 @@ import com.example.repository.SubjectRepository;
 import com.example.response.AddressResponse;
 import com.example.response.StudentResponse;
 import com.example.response.SubjectResponse;
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.DataLoader;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -52,7 +54,12 @@ public class StudentResponseResolver {
 	public CompletableFuture<List<SubjectResponse>> getLearningSubjects(
 			StudentResponse studentResponse,
 			@Argument SubjectNameFilter filter,
-			DataLoader<Long, List<Subject>> subjectDataLoader) {
+			DataFetchingEnvironment env) {
+
+		DataLoader<Long, List<Subject>> subjectDataLoader = env.getDataLoader("subjectDataLoader");
+		if (subjectDataLoader == null) {
+			throw new IllegalStateException("DataLoader 'subjectDataLoader' não registrado.");
+		}
 
 		return subjectDataLoader.load(studentResponse.getId())
 				.thenApply(subjects -> subjects.stream()
