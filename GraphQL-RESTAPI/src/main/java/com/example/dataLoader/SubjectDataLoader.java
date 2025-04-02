@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SubjectDataLoader {
 
-    private SubjectRepository subjectRepository;
+    private final SubjectRepository subjectRepository;
 
     public MappedBatchLoaderWithContext<Long, List<Subject>> getLoader() {
         return (studentIds, env) -> CompletableFuture.supplyAsync(() -> {
