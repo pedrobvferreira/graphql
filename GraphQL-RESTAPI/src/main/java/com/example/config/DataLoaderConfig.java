@@ -5,8 +5,6 @@ import com.example.entity.Subject;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderFactory;
-import org.dataloader.DataLoaderRegistry;
-import org.dataloader.MappedBatchLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.DataLoaderRegistrar;
@@ -23,10 +21,9 @@ public class DataLoaderConfig {
     @Bean
     public DataLoaderRegistrar dataLoaderRegistrar() {
         return (registry, context) -> {
-            DataLoader<Long, List<Subject>> subjectDataLoaderInstance =
-                    DataLoaderFactory.newMappedDataLoader(subjectDataLoader.getLoader());
-
-            registry.register("subjectDataLoader", subjectDataLoaderInstance);
+            System.out.println("Registrando subjectDataLoader...");
+            var loader = DataLoaderFactory.newMappedDataLoader(subjectDataLoader.getLoader());
+            registry.register("subjectDataLoader", loader);
         };
     }
 
