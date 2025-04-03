@@ -1,6 +1,5 @@
 package com.example.response;
 
-import com.example.dto.AddressDTO;
 import com.example.dto.StudentDTO;
 import lombok.Getter;
 import lombok.Setter;
