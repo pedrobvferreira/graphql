@@ -1,6 +1,6 @@
 # GraphQL API - Exemplo de Queries
 
-Este documento fornece exemplos de consultas (queries) e mutações (mutations) para a API GraphQL
+Este documento fornece exemplos de consultas (queries) para a API GraphQL
 
 ---
 
