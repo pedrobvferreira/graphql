@@ -15,7 +15,7 @@ public class StudentResponse {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private AddressDTO address;
+	private AddressResponse address;
 	private List<SubjectResponse> learningSubjects;
 	
 	public StudentResponse (StudentDTO student) {
