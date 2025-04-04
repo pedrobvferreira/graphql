@@ -18,6 +18,7 @@ type SubjectResponse {
 }
 
 type AddressResponse {
+    id: ID
     street: String
     city: String
 }

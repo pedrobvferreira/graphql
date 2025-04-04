@@ -36,8 +36,9 @@
 		</dependency>
 		<!-- Spring GraphQL -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-graphql</artifactId>
+			<groupId>org.springframework.graphql</groupId>
+			<artifactId>spring-graphql</artifactId>
+			<version>1.3.4</version>
 		</dependency>
 	</dependencies>
 
@@ -61,5 +62,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

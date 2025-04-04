@@ -14,8 +14,6 @@ public class StudentResponse {
 	private String firstName;
 	private String lastName;
 	private String email;
-	private AddressResponse address;
-	private List<SubjectResponse> learningSubjects;
 	
 	public StudentResponse (StudentDTO student) {
 		this.id = student.getId();
