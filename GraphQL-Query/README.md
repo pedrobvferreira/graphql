@@ -18,11 +18,18 @@ http://localhost:8080/graphql
 
 Essa consulta retorna os dados de `firstQuery` e `secondQuery`.
 
+Exemplo GraphQL:
 ```graphql
 query {
     firstQuery
     secondQuery
     fullName
+}
+```
+Exemplo JSON:
+```json
+{
+"query": "query { firstQuery secondQuery }"
 }
 ```
 
