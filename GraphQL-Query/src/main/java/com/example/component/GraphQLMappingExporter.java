@@ -63,18 +63,18 @@ public class GraphQLMappingExporter {
         }
     }
 
+    /**
+     * Skips generation, if both SDL files already exist (query + mutation)
+     */
     private boolean sdlFilesExist() {
         Path queryPath = Paths.get(OUTPUT_DIR, QUERY_FILE);
         Path mutationPath = Paths.get(OUTPUT_DIR, MUTATION_FILE);
         boolean exists = Files.exists(queryPath) && Files.exists(mutationPath);
-
         if (exists) {
             LOG.info("Both SDL files already exist. Skipping SDL generation.");
         }
-
         return exists;
     }
-
 
     /**
      * Scans the given package for @Controller classes.
