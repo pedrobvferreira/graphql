@@ -1,6 +1,6 @@
 package com.example.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class SampleRequest {
 
-	@NotNull
+	@NotBlank
 	private String firstName;
 	private String lastName;
 }

@@ -3,6 +3,7 @@ package com.example.controllers;
 import com.example.request.SampleRequest;
 import com.example.response.StudentResponse;
 import com.example.service.StudentService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -30,7 +31,7 @@ public class Query {
     }
 
     @QueryMapping
-    public StudentResponse getStudent(@Argument Long id) {
+    public StudentResponse getStudent(@Argument @NotNull Long id) {
         return new StudentResponse(studentService.getStudentById(id));
     }
 }
