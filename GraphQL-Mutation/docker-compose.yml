@@ -3,11 +3,11 @@ version: "3.8"
 services:
   postgres-db:
     image: postgres:11
-    container_name: graphql_postgres
+    container_name: graphql_mutation
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: graphql
+      POSTGRES_DB: graphql_mut
     ports:
       - "5432:5432"
     volumes:
