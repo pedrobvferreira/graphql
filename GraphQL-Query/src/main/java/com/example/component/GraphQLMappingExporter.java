@@ -28,8 +28,8 @@ public class GraphQLMappingExporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLMappingExporter.class);
     private static final String OUTPUT_DIR = "src/main/resources/graphql";
-    private static final String QUERY_FILE = "query.graphql";
-    private static final String MUTATION_FILE = "mutation.graphql";
+    private static final String QUERY_FILE = "query.graphqls";
+    private static final String MUTATION_FILE = "mutation.graphqls";
     private static final String CONTROLLERS_PACKAGE = "com.example.controllers";
 
     // Tracks input types already registered
