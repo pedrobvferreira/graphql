@@ -1,6 +1,7 @@
 package com.example.resolver;
 
 import com.example.entity.Subject;
+import com.example.enums.SubjectNameFilter;
 import com.example.response.StudentResponse;
 import com.example.response.SubjectResponse;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -14,12 +15,12 @@ import java.util.List;
 public class StudentResponseResolver {
 
 	@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
-	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument String subjectNameFilter) {
+	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument SubjectNameFilter subjectNameFilter) {
 
 		List<SubjectResponse> learningSubjects = new ArrayList<>();
 		if (studentResponse.getStudent() != null && studentResponse.getStudent().getLearningSubjects() != null) {
 			for (Subject subject : studentResponse.getStudent().getLearningSubjects()) {
-				if ("ALL".equalsIgnoreCase(subjectNameFilter) || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter)) {
+				if ("ALL".equalsIgnoreCase(subjectNameFilter.name()) || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name())) {
 					learningSubjects.add(new SubjectResponse(subject));
 				}
 			}
