@@ -41,8 +41,9 @@ public class GraphQLMappingExporter {
     @PostConstruct
     public void generateSDL() {
         try {
-            Set<Class<?>> controllers = scanControllers();
+            if (sdlFilesExist()) return;
 
+            Set<Class<?>> controllers = scanControllers();
             String querySDL = buildSDLFromAnnotations(controllers, QueryMapping.class, "type Query");
             String mutationSDL = buildSDLFromAnnotations(controllers, MutationMapping.class, "type Mutation");
 
@@ -61,6 +62,19 @@ public class GraphQLMappingExporter {
             LOG.error("Failed to export SDL files: {}", e.getMessage(), e);
         }
     }
+
+    private boolean sdlFilesExist() {
+        Path queryPath = Paths.get(OUTPUT_DIR, QUERY_FILE);
+        Path mutationPath = Paths.get(OUTPUT_DIR, MUTATION_FILE);
+        boolean exists = Files.exists(queryPath) && Files.exists(mutationPath);
+
+        if (exists) {
+            LOG.info("Both SDL files already exist. Skipping SDL generation.");
+        }
+
+        return exists;
+    }
+
 
     /**
      * Scans the given package for @Controller classes.
@@ -238,6 +252,12 @@ public class GraphQLMappingExporter {
     private void saveSDL(String fileName, String content) throws Exception {
         Path outputPath = Paths.get(OUTPUT_DIR, fileName);
         Files.createDirectories(outputPath.getParent());
+
+        // Don't overwrite if file already exists
+        if (Files.exists(outputPath)) {
+            LOG.info("SDL '{}' already exists. Skipping export.", outputPath);
+            return;
+        }
 
         try (OutputStream os = Files.newOutputStream(outputPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             os.write(content.getBytes(StandardCharsets.UTF_8));
