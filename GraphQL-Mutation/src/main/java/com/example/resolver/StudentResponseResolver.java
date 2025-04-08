@@ -14,24 +14,25 @@ import java.util.List;
 @Controller
 public class StudentResponseResolver {
 
-	@SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
-	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument SubjectNameFilter subjectNameFilter) {
+    @SchemaMapping(typeName = "StudentResponse", field = "learningSubjects")
+    public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument SubjectNameFilter subjectNameFilter) {
 
-		List<SubjectResponse> learningSubjects = new ArrayList<>();
-		if (subjectNameFilter != null) {
-			if (studentResponse.getStudent() != null && studentResponse.getStudent().getLearningSubjects() != null) {
-				for (Subject subject : studentResponse.getStudent().getLearningSubjects()) {
-					if ("ALL".equalsIgnoreCase(subjectNameFilter.name()) || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name())) {
-						learningSubjects.add(new SubjectResponse(subject));
-					}
-				}
-			}
-		}
-		return learningSubjects;
-	}
+        List<SubjectResponse> learningSubjects = new ArrayList<>();
+        if (studentResponse.getStudent() != null && studentResponse.getStudent().getLearningSubjects() != null) {
+            for (Subject subject : studentResponse.getStudent().getLearningSubjects()) {
+                if (subjectNameFilter == null
+                        || "ALL".equalsIgnoreCase(subjectNameFilter.name())
+                        || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name())) {
 
-	@SchemaMapping(typeName = "StudentResponse", field = "fullName")
-	public String getFullName(StudentResponse studentResponse) {
-		return studentResponse.getFirstName() + " " + studentResponse.getLastName();
-	}
+                    learningSubjects.add(new SubjectResponse(subject));
+                }
+            }
+        }
+        return learningSubjects;
+    }
+
+    @SchemaMapping(typeName = "StudentResponse", field = "fullName")
+    public String getFullName(StudentResponse studentResponse) {
+        return studentResponse.getFirstName() + " " + studentResponse.getLastName();
+    }
 }
