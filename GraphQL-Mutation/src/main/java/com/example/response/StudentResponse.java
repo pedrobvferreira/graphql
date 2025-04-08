@@ -1,9 +1,7 @@
 package com.example.response;
 
-import java.util.List;
-
 import com.example.entity.Student;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,11 +15,10 @@ public class StudentResponse {
 	private String email;
 	private String street;
 	private String city;
-	private List<SubjectResponse> learningSubjects;
 
 	// this is for internal use. DO NOT PUT IN SCHEMA
+	@JsonIgnore
 	private Student student;
-	private String fullName;
 	
 	public StudentResponse (Student student) {
 		this.student = student;

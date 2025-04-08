@@ -1,5 +1,7 @@
+
 package com.example.component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,42 +32,32 @@ public class GraphQLMappingExporter {
     private static final String OUTPUT_DIR = "src/main/resources/graphql";
     private static final String QUERY_FILE = "query.graphqls";
     private static final String MUTATION_FILE = "mutation.graphqls";
-    private static final String CONTROLLERS_PACKAGE = "com.example.controllers";
+    private static final String CONTROLLERS_PACKAGE = "com.example";
 
-    // Tracks input types already registered
-    private final Set<Class<?>> collectedInputTypes = new HashSet<>();
+    private final Set<Class<?>> processedTypes = new HashSet<>();
+    private final Map<Class<?>, String> typeDefinitions = new LinkedHashMap<>();
 
-    /**
-     * Invoked on application startup to export the GraphQL SDL files.
-     */
     @PostConstruct
     public void generateSDL() {
         try {
             if (sdlFilesExist()) return;
 
             Set<Class<?>> controllers = scanControllers();
+
             String querySDL = buildSDLFromAnnotations(controllers, QueryMapping.class, "type Query");
             String mutationSDL = buildSDLFromAnnotations(controllers, MutationMapping.class, "type Mutation");
 
             if (!querySDL.trim().equals("type Query {\n}")) {
                 saveSDL(QUERY_FILE, querySDL);
-            } else {
-                LOG.info("No @QueryMapping methods found. Skipping query.graphql");
             }
-
             if (!mutationSDL.trim().equals("type Mutation {\n}")) {
                 saveSDL(MUTATION_FILE, mutationSDL);
-            } else {
-                LOG.info("No @MutationMapping methods found. Skipping mutation.graphql");
             }
         } catch (Exception e) {
             LOG.error("Failed to export SDL files: {}", e.getMessage(), e);
         }
     }
 
-    /**
-     * Skips generation, if both SDL files already exist (query + mutation)
-     */
     private boolean sdlFilesExist() {
         Path queryPath = Paths.get(OUTPUT_DIR, QUERY_FILE);
         Path mutationPath = Paths.get(OUTPUT_DIR, MUTATION_FILE);
@@ -76,9 +68,6 @@ public class GraphQLMappingExporter {
         return exists;
     }
 
-    /**
-     * Scans the given package for @Controller classes.
-     */
     private Set<Class<?>> scanControllers() {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Controller.class));
@@ -96,16 +85,12 @@ public class GraphQLMappingExporter {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * Builds SDL for methods with @QueryMapping or @MutationMapping.
-     */
-    private String buildSDLFromAnnotations(Set<Class<?>> classes, Class<? extends Annotation> annotationClass, String typeName) {
-        StringBuilder sdl = new StringBuilder();
-        StringBuilder typeBlock = new StringBuilder(typeName + " {\n");
+    private String buildSDLFromAnnotations(Set<Class<?>> classes, Class<? extends Annotation> mapping, String rootType) {
+        StringBuilder typeBlock = new StringBuilder(rootType + " {\n");
 
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getDeclaredMethods()) {
-                if (!method.isAnnotationPresent(annotationClass)) continue;
+                if (!method.isAnnotationPresent(mapping)) continue;
 
                 String methodName = method.getName();
                 Parameter[] parameters = method.getParameters();
@@ -113,84 +98,77 @@ public class GraphQLMappingExporter {
                 StringJoiner argsJoiner = new StringJoiner(", ");
                 for (Parameter param : parameters) {
                     String paramName = param.getName();
-                    String gqlType = mapToGraphQLType(param, sdl);
+                    String gqlType = resolveGraphQLType(param.getParameterizedType(), param.getName());
                     boolean required = isRequired(param);
-
-                    argsJoiner.add(paramName + ": " + gqlType + (required ? "!" : ""));
+                    argsJoiner.add(paramName + " : " + gqlType + (required ? "!" : ""));
+                    scanType(param.getType());
                 }
 
-                String returnType = mapReturnType(method);
+                Class<?> returnType = method.getReturnType();
+                scanType(returnType);
 
+                String returnTypeName = resolveGraphQLType(returnType, methodName);
                 typeBlock.append("  ")
                         .append(methodName)
                         .append(parameters.length > 0 ? "(" + argsJoiner + ")" : "")
-                        .append(": ")
-                        .append(returnType)
+                        .append(" : ")
+                        .append(returnTypeName)
                         .append("\n");
             }
         }
 
-        typeBlock.append("}\n");
-        sdl.append(typeBlock);
-        return sdl.toString();
+        typeBlock.append("}\n\n");
+
+        return typeBlock + String.join("\n", typeDefinitions.values());
     }
 
-    /**
-     * Maps a Java method parameter to its equivalent GraphQL SDL type.
-     */
-    private String mapToGraphQLType(Parameter param, StringBuilder sdl) {
+    private void scanType(Class<?> type) {
+        if (!isCustomType(type) || processedTypes.contains(type)) return;
+        processedTypes.add(type);
 
-        String name = param.getName();
-        Class<?> type = param.getType();
-        Type genericType = param.getParameterizedType();
+        if (type.isEnum()) {
+            StringBuilder enumBlock = new StringBuilder();
+            enumBlock.append("enum ").append(type.getSimpleName()).append(" {\n");
+            for (Object constant : type.getEnumConstants()) {
+                enumBlock.append("  ").append(constant.toString()).append("\n");
+            }
+            enumBlock.append("}\n");
+            typeDefinitions.put(type, enumBlock.toString());
+            return;
+        }
 
-        // Handle list types (e.g., List<SubjectRequest> => [SubjectRequest])
-        if (List.class.isAssignableFrom(type)) {
-            String generic = "String";
-            if (genericType instanceof ParameterizedType parameterizedType) {
-                Type arg = parameterizedType.getActualTypeArguments()[0];
-                if (arg instanceof Class<?> cls) {
-                    generic = cls.getSimpleName();
-                } else {
-                    String raw = arg.getTypeName();
-                    generic = raw.substring(raw.lastIndexOf('.') + 1);
+        String kind = type.getSimpleName().endsWith("Request") ? "input" : "type";
+        StringBuilder sdl = new StringBuilder();
+        sdl.append(kind).append(" ").append(type.getSimpleName()).append(" {\n");
+
+        for (Field field : type.getDeclaredFields()) {
+            if (field.isAnnotationPresent(JsonIgnore.class) || Modifier.isStatic(field.getModifiers())) continue;
+
+            String fieldName = field.getName();
+            String gqlType = resolveGraphQLType(field.getGenericType(), fieldName);
+            boolean isRequired = field.isAnnotationPresent(NotNull.class) || field.isAnnotationPresent(NotBlank.class);
+
+            sdl.append("  ").append(fieldName).append(" : ").append(gqlType);
+            if (isRequired) sdl.append("!");
+            sdl.append("\n");
+
+            if (isCustomType(field.getType())) {
+                scanType(field.getType());
+            }
+
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                Type generic = field.getGenericType();
+                if (generic instanceof ParameterizedType pt) {
+                    Type actual = pt.getActualTypeArguments()[0];
+                    if (actual instanceof Class<?> actualClass) {
+                        scanType(actualClass);
+                    }
                 }
             }
-            return "[" + generic + "]";
         }
 
-        // Custom or scalar
-        if (isCustomType(type)) {
-            registerInputTypeIfNeeded(type, sdl);
-        }
-
-        return resolveGraphQLType(type, name); // fallback to custom object type
-    }
-
-    /**
-     * Registers a class as an input type if it hasn't been registered yet.
-     */
-    private void registerInputTypeIfNeeded(Class<?> inputClass, StringBuilder inputBlock) {
-        if (collectedInputTypes.contains(inputClass)) return;
-        collectedInputTypes.add(inputClass);
-
-        inputBlock.append("input ").append(inputClass.getSimpleName()).append(" {\n");
-
-        for (Field field : inputClass.getDeclaredFields()) {
-            String fieldName = field.getName();
-            String gqlType = resolveGraphQLType(field.getType(), fieldName);
-            boolean isNonNull = isNonNullField(field);
-
-            inputBlock.append("  ").append(fieldName).append(" : ").append(gqlType);
-            if (isNonNull) inputBlock.append("!");
-            inputBlock.append("\n");
-        }
-
-        inputBlock.append("}\n\n");
-    }
-
-    private boolean isNonNullField(Field field) {
-        return field.isAnnotationPresent(NotNull.class) || field.isAnnotationPresent(NotBlank.class);
+        sdl.append("}\n");
+        typeDefinitions.put(type, sdl.toString());
     }
 
     private boolean isCustomType(Class<?> type) {
@@ -198,62 +176,39 @@ public class GraphQLMappingExporter {
                 || type.equals(String.class)
                 || Number.class.isAssignableFrom(type)
                 || type.equals(Boolean.class)
+                || type.isEnum()
                 || Collection.class.isAssignableFrom(type)
                 || type.getName().startsWith("java."));
     }
 
-    /**
-     * Maps basic Java types to GraphQL scalars.
-     */
-    private String resolveGraphQLType(Class<?> type, String name) {
-        if (name.equalsIgnoreCase("id") || type == Long.class || type.getSimpleName().equals("UUID")) return "ID";
-        if (type == String.class || type == long.class) return "String";
-        if (type == Integer.class || type == int.class) return "Int";
-        if (type == Double.class || type == double.class) return "Float";
-        if (type == Boolean.class || type == boolean.class) return "Boolean";
-
-        return type.getSimpleName();
-    }
-
-    /**
-     * Checks if a parameter is required (e.g., annotated with @NotNull or @NonNull).
-     */
     private boolean isRequired(Parameter param) {
         return Arrays.stream(param.getAnnotations())
                 .map(a -> a.annotationType().getSimpleName())
                 .anyMatch(name -> name.equals("NotNull") || name.equals("NonNull"));
     }
 
-    /**
-     * Maps a method return type to GraphQL SDL type.
-     */
-    private String mapReturnType(Method method) {
-        Class<?> returnType = method.getReturnType();
-        if (returnType == void.class) return "Void";
-
-        if (List.class.isAssignableFrom(returnType)) {
-            String generic = "String";
-            Type type = method.getGenericReturnType();
-            if (type instanceof ParameterizedType parameterizedType) {
-                Type arg = parameterizedType.getActualTypeArguments()[0];
-                if (arg instanceof Class<?> cls) {
-                    generic = cls.getSimpleName();
-                }
-            }
-            return "[" + generic + "]";
+    private String resolveGraphQLType(Type type, String name) {
+        if (type instanceof ParameterizedType pt && pt.getRawType() == List.class) {
+            Type actualType = pt.getActualTypeArguments()[0];
+            return "[" + resolveGraphQLType(actualType, name) + "]";
         }
 
-        return returnType.getSimpleName();
+        if (type instanceof Class<?> cls) {
+            if (name.equalsIgnoreCase("id") || cls == Long.class || cls.getSimpleName().equals("UUID")) return "ID";
+            if (cls == String.class || cls == long.class) return "String";
+            if (cls == Integer.class || cls == int.class) return "Int";
+            if (cls == Double.class || cls == double.class) return "Float";
+            if (cls == Boolean.class || cls == boolean.class) return "Boolean";
+
+            return cls.getSimpleName();
+        }
+
+        return "String";
     }
 
-    /**
-     * Saves SDL content to the specified file inside the output directory.
-     */
     private void saveSDL(String fileName, String content) throws Exception {
         Path outputPath = Paths.get(OUTPUT_DIR, fileName);
         Files.createDirectories(outputPath.getParent());
-
-        // Don't overwrite if file already exists
         if (Files.exists(outputPath)) {
             LOG.info("SDL '{}' already exists. Skipping export.", outputPath);
             return;
