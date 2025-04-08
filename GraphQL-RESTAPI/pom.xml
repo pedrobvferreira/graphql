@@ -76,6 +76,12 @@
 			<artifactId>java-dataloader</artifactId>
 			<version>3.4.0</version>
 		</dependency>
+		<!-- Opcional mas útil para mapeamentos avançados -->
+		<dependency>
+			<groupId>com.graphql-java-kickstart</groupId>
+			<artifactId>graphql-java-tools</artifactId>
+			<version>14.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
