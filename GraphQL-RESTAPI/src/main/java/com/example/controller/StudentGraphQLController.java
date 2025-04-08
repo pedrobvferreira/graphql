@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.request.StudentRequest;
 import com.example.response.StudentResponse;
 import com.example.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -20,12 +21,12 @@ public class StudentGraphQLController {
     }
 
     @MutationMapping
-    public StudentResponse createStudent(@Argument StudentRequest studentRequest) {
+    public StudentResponse createStudent(@Argument @Valid StudentRequest studentRequest) {
         return new StudentResponse(studentService.createStudent(studentRequest));
     }
 
     @MutationMapping
-    public StudentResponse updateStudent(@Argument Long id, @Argument StudentRequest studentRequest) {
+    public StudentResponse updateStudent(@Argument Long id, @Argument @Valid StudentRequest studentRequest) {
         return new StudentResponse(studentService.updateStudent(id, studentRequest));
     }
 
