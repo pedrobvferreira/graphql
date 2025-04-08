@@ -18,10 +18,12 @@ public class StudentResponseResolver {
 	public List<SubjectResponse> getLearningSubjects(StudentResponse studentResponse, @Argument SubjectNameFilter subjectNameFilter) {
 
 		List<SubjectResponse> learningSubjects = new ArrayList<>();
-		if (studentResponse.getStudent() != null && studentResponse.getStudent().getLearningSubjects() != null) {
-			for (Subject subject : studentResponse.getStudent().getLearningSubjects()) {
-				if ("ALL".equalsIgnoreCase(subjectNameFilter.name()) || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name())) {
-					learningSubjects.add(new SubjectResponse(subject));
+		if (subjectNameFilter != null) {
+			if (studentResponse.getStudent() != null && studentResponse.getStudent().getLearningSubjects() != null) {
+				for (Subject subject : studentResponse.getStudent().getLearningSubjects()) {
+					if ("ALL".equalsIgnoreCase(subjectNameFilter.name()) || subject.getSubjectName().equalsIgnoreCase(subjectNameFilter.name())) {
+						learningSubjects.add(new SubjectResponse(subject));
+					}
 				}
 			}
 		}
