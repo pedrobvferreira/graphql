@@ -40,7 +40,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         indexSchemaMappings();
-        scanAndIndexMappings();
+        indexOtherMappings();
         resolveSchemaMappingTypeNames();
         buildAllTypes();
 
@@ -75,7 +75,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
         }
     }
 
-    private void scanAndIndexMappings() {
+    private void indexOtherMappings() {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Controller.class);
 
         for (Object bean : beans.values()) {
