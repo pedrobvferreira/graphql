@@ -1,12 +1,10 @@
-package com.example.config;
+package com.example.comp;
 
 import com.example.dataloader.AddressDataLoader;
 import com.example.dataloader.SubjectDataLoader;
-import graphql.GraphQLContext;
 import lombok.AllArgsConstructor;
 import org.dataloader.DataLoaderRegistry;
 import org.dataloader.DataLoaderFactory;
-import org.springframework.graphql.execution.DataLoaderRegistrar;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
