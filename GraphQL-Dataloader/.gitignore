@@ -23,9 +23,6 @@ build/
 # Ignorar arquivos do VS Code
 .vscode/
 
-# Ignorar arquivos GraphQL SDL se não estiver usando SDL-first
-*.graphqls
-
 # Ignorar wrapper do Maven (caso queira desabilitar commits)
 mvnw
 mvnw.cmd
