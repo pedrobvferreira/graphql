@@ -4,6 +4,7 @@ import com.example.request.StudentRequest;
 import com.example.response.StudentResponse;
 import com.example.service.StudentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -16,7 +17,7 @@ public class StudentGraphQLController {
     private final StudentService studentService;
 
     @QueryMapping
-    public StudentResponse getStudent(@Argument Long id) {
+    public StudentResponse getStudent(@Argument @NotNull Long id) {
         return new StudentResponse(studentService.getStudentById(id));
     }
 
@@ -26,12 +27,12 @@ public class StudentGraphQLController {
     }
 
     @MutationMapping
-    public StudentResponse updateStudent(@Argument Long id, @Argument @Valid StudentRequest studentRequest) {
+    public StudentResponse updateStudent(@Argument Long id, @Argument @NotNull StudentRequest studentRequest) {
         return new StudentResponse(studentService.updateStudent(id, studentRequest));
     }
 
     @MutationMapping
-    public Boolean deleteStudent(@Argument Long id) {
+    public Boolean deleteStudent(@Argument @NotNull Long id) {
         return studentService.deleteStudent(id);
     }
 }
