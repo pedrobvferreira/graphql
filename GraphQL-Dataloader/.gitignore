@@ -1,0 +1,32 @@
+# Ignorar diretórios e arquivos de build
+/target/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Ignorar arquivos gerados pela IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+*.class
+
+# Ignorar arquivos gerados por Eclipse/STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# Ignorar arquivos do VS Code
+.vscode/
+
+# Ignorar arquivos GraphQL SDL se não estiver usando SDL-first
+*.graphqls
+
+# Ignorar wrapper do Maven (caso queira desabilitar commits)
+mvnw
+mvnw.cmd
+.mvn/
