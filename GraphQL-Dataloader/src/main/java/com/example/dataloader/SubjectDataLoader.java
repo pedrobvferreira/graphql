@@ -16,7 +16,7 @@ public class SubjectDataLoader implements MappedBatchLoader<Long, List<SubjectRe
 
     @Override
     public CompletionStage<Map<Long, List<SubjectResponse>>> load(Set<Long> studentIds) {
-        Map<Long, List<SubjectResponse>> mockSubjects = Map.of(
+        Map<Long, List<SubjectResponse>> subjectsMap = Map.of(
                 1L, List.of(
                         new SubjectResponse(1L, "JAVA", 90.0),
                         new SubjectResponse(2L, "MYSQL", 85.5),
@@ -28,7 +28,7 @@ public class SubjectDataLoader implements MappedBatchLoader<Long, List<SubjectRe
                 )
         );
 
-        Map<Long, List<SubjectResponse>> result = mockSubjects.entrySet().stream()
+        Map<Long, List<SubjectResponse>> result = subjectsMap.entrySet().stream()
                 .filter(entry -> studentIds.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
