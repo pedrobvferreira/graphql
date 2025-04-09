@@ -12,12 +12,4 @@ public class GraphQLApplication {
 		SpringApplication.run(GraphQLApplication.class, args);
 	}
 
-	@Controller
-	static class SimpleTestController {
-		@QueryMapping
-		public String hello() {
-			return "GraphQL está funcionando!";
-		}
-	}
-
 }
