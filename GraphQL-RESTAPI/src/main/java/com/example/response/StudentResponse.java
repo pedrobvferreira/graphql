@@ -20,5 +20,4 @@ public class StudentResponse {
 		this.lastName = student.getLastName();
 		this.email = student.getEmail();
 	}
-
 }
