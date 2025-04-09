@@ -232,9 +232,44 @@ public class GraphQLMappingExporter implements ApplicationRunner {
     }
 
     private String resolveTypeFromReturn(Method method) {
-        Class<?> actualType = getWrappedReturnType(method);
-        registerTypeIfNeeded(actualType);
-        return resolveGraphQLScalarType(actualType);
+        Type returnType = method.getGenericReturnType();
+
+        Type unwrapped = unwrapGeneric(returnType);
+        if (unwrapped instanceof ParameterizedType pt) {
+            Type raw = pt.getRawType();
+            if (raw instanceof Class<?> rawClass && Collection.class.isAssignableFrom(rawClass)) {
+                Type inner = pt.getActualTypeArguments()[0];
+                if (inner instanceof Class<?> innerClass) {
+                    registerTypeIfNeeded(innerClass);
+                    return "[" + resolveGraphQLScalarType(innerClass) + "]";
+                }
+                return "[Unknown]";
+            }
+        }
+
+        Class<?> actualClass = extractClass(unwrapped);
+        registerTypeIfNeeded(actualClass);
+        return resolveGraphQLScalarType(actualClass);
+    }
+
+    private Type unwrapGeneric(Type type) {
+        while (type instanceof ParameterizedType pt) {
+            Type raw = pt.getRawType();
+            if (!(raw instanceof Class<?> rawClass)) break;
+
+            if (rawClass == CompletableFuture.class || rawClass == Optional.class || rawClass == ResponseEntity.class) {
+                type = pt.getActualTypeArguments()[0];
+            } else {
+                break;
+            }
+        }
+        return type;
+    }
+
+    private Class<?> extractClass(Type type) {
+        if (type instanceof Class<?> clazz) return clazz;
+        if (type instanceof ParameterizedType pt && pt.getRawType() instanceof Class<?> rawClass) return rawClass;
+        return Object.class;
     }
 
     private String applyNullability(String type, AnnotatedElement annotated) {
