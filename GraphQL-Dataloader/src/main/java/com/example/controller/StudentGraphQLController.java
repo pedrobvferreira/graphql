@@ -27,7 +27,7 @@ public class StudentGraphQLController {
     }
 
     @MutationMapping
-    public StudentResponse updateStudent(@Argument Long id, @Argument @NotNull StudentRequest studentRequest) {
+    public StudentResponse updateStudent(@Argument @NotNull Long id, @Argument @NotNull StudentRequest studentRequest) {
         return new StudentResponse(studentService.updateStudent(id, studentRequest));
     }
 
