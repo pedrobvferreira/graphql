@@ -30,6 +30,11 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class GraphQLMappingExporter implements ApplicationRunner {
 
+    private static final String OUTPUT_DIR = "src/main/resources/generated-sdl/";
+    private static final String QUERY_FILE = "query.graphqls";
+    private static final String MUTATION_FILE = "mutation.graphqls";
+    private static final String TYPE_FILE = "types.graphqls";
+
     private final ApplicationContext applicationContext;
     private final Set<Class<?>> discoveredTypes = new HashSet<>();
     private final Map<String, StringBuilder> sdlFiles = new HashMap<>();
@@ -44,10 +49,10 @@ public class GraphQLMappingExporter implements ApplicationRunner {
         resolveSchemaMappingTypeNames();
         buildAllTypes();
 
-        saveSDL("query.graphqls", closeBlock(sdlFiles.get("Query")));
-        saveSDL("mutation.graphqls", closeBlock(sdlFiles.get("Mutation")));
+        saveSDL(QUERY_FILE, closeBlock(sdlFiles.get("Query")));
+        saveSDL(MUTATION_FILE, closeBlock(sdlFiles.get("Mutation")));
         if (sdlFiles.containsKey("types")) {
-            saveSDL("types.graphqls", sdlFiles.get("types"));
+            saveSDL(TYPE_FILE, sdlFiles.get("types"));
         }
     }
 
@@ -352,7 +357,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
 
     private void saveSDL(String fileName, StringBuilder content) throws IOException {
         if (content == null) return;
-        Path path = Path.of("src/main/resources/generated-sdl/", fileName);
+        Path path = Path.of(OUTPUT_DIR, fileName);
         Files.createDirectories(path.getParent());
         Files.writeString(path, content.toString(), StandardCharsets.UTF_8);
     }
