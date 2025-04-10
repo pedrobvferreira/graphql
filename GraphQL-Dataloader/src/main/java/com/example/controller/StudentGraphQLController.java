@@ -22,12 +22,12 @@ public class StudentGraphQLController {
     }
 
     @MutationMapping
-    public StudentResponse createStudent(@Argument @Valid StudentRequest studentRequest) {
+    public StudentResponse createStudent(@Argument @Valid @NotNull StudentRequest studentRequest) {
         return new StudentResponse(studentService.createStudent(studentRequest));
     }
 
     @MutationMapping
-    public StudentResponse updateStudent(@Argument @NotNull Long id, @Argument @NotNull StudentRequest studentRequest) {
+    public StudentResponse updateStudent(@Argument @NotNull Long id, @Argument @Valid @NotNull StudentRequest studentRequest) {
         return new StudentResponse(studentService.updateStudent(id, studentRequest));
     }
 
