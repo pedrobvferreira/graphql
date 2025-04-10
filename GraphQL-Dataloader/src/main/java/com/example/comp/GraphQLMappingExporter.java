@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -65,6 +66,8 @@ public class GraphQLMappingExporter implements ApplicationRunner {
 
     private void indexSchemaMappings() {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Controller.class);
+        beans.entrySet().removeIf(entry ->
+                entry.getValue().getClass().isAnnotationPresent(RestController.class));
 
         for (Object bean : beans.values()) {
             Class<?> clazz = AopProxyUtils.ultimateTargetClass(bean);
@@ -82,6 +85,8 @@ public class GraphQLMappingExporter implements ApplicationRunner {
 
     private void indexOtherMappings() {
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(Controller.class);
+        beans.entrySet().removeIf(entry ->
+                entry.getValue().getClass().isAnnotationPresent(RestController.class));
 
         for (Object bean : beans.values()) {
             Class<?> clazz = AopProxyUtils.ultimateTargetClass(bean);
@@ -344,6 +349,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
         return name.startsWith("org.springframework.")
                 || name.startsWith("jakarta.servlet.")
                 || name.startsWith("org.apache.")
+                || name.startsWith("graphql.")
                 || name.contains("ErrorProperties");
     }
 
