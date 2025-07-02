@@ -1,6 +1,5 @@
 package com.example.resolver;
 
-import com.example.dto.AddressDTO;
 import com.example.enums.SubjectNameFilter;
 import com.example.response.AddressResponse;
 import com.example.response.StudentResponse;
@@ -12,7 +11,6 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
