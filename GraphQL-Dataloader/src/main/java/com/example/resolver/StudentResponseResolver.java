@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudentResponseResolver {
 
+	/**
+	 * 3) Resolver usa o DataLoader:
+	 * Aqui, o metodo load(...) não busca ainda do banco, apenas agenda.
+	 **/
 	@SchemaMapping(typeName = "StudentResponse", field = "address")
 	public CompletableFuture<AddressResponse> getAddress(StudentResponse studentResponse,
 														 DataLoader<Long, AddressResponse> addressDataLoader) {

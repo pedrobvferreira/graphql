@@ -14,14 +14,20 @@ import java.util.stream.Collectors;
 @Component
 public class AddressDataLoader implements MappedBatchLoader<Long, AddressResponse> {
 
+    /**
+     * 4) BatchLoader executa o acesso real:
+     * O metodo é chamado uma única vez com todos os IDs juntos, resolvendo o problema N+1.
+     **/
     @Override
     public CompletionStage<Map<Long, AddressResponse>> load(Set<Long> studentIds) {
+        // Poderia ser uma query real: SELECT * FROM address WHERE student_id IN (...)
         // Simula fetch em batch (poderia vir de repositório, etc.)
         Map<Long, AddressResponse> addressMap = Map.of(
                 1L, new AddressResponse(new AddressDTO(1L, "Rua das Flores", "Lisboa")),
                 2L, new AddressResponse(new AddressDTO(2L, "Avenida Central", "Porto"))
         );
 
+        //5) Resultado é mapeado e entregue
         // Apenas retorna os que foram solicitados
         Map<Long, AddressResponse> result = addressMap.entrySet().stream()
                 .filter(e -> studentIds.contains(e.getKey()))

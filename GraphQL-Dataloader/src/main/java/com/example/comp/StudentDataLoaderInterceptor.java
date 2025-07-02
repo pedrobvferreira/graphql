@@ -18,6 +18,10 @@ public class StudentDataLoaderInterceptor implements WebGraphQlInterceptor {
     private final AddressDataLoader addressDataLoader;
     private final SubjectDataLoader subjectDataLoader;
 
+    /**
+     * 2) Interceptor registra os loaders:
+     * Isso garante que a requisição GraphQL tenha um contexto isolado com seus próprios loaders.
+     **/
     @Override
     public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
         // Cria DataLoaderRegistry por requisição
