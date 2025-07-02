@@ -75,7 +75,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
             for (Method method : clazz.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(SchemaMapping.class)) {
                     SchemaMapping sm = method.getAnnotation(SchemaMapping.class);
-                    String typeName = sm.typeName();
+                    String typeName = Objects.requireNonNull(sm).typeName();
                     schemaMappingsByType.computeIfAbsent(typeName, k -> new ArrayList<>()).add(method);
                     schemaMappingTypeNames.add(typeName);
                 }
@@ -153,14 +153,14 @@ public class GraphQLMappingExporter implements ApplicationRunner {
 
         for (Method method : schemaMappingsByType.getOrDefault(typeName, List.of())) {
             SchemaMapping sm = method.getAnnotation(SchemaMapping.class);
-            String fieldName = sm.field().isEmpty() ? method.getName() : sm.field();
+            String fieldName = Objects.requireNonNull(sm).field().isEmpty() ? method.getName() : sm.field();
 
             if (addedFields.contains(fieldName)) continue;
 
             List<String> args = new ArrayList<>();
             for (Parameter param : method.getParameters()) {
                 if (param.isAnnotationPresent(Argument.class)) {
-                    String name = param.getAnnotation(Argument.class).name();
+                    String name = Objects.requireNonNull(param.getAnnotation(Argument.class)).name();
                     if (name.isEmpty()) name = param.getName();
                     args.add(name + ": " + resolveTypeFromParameter(param));
                 }
@@ -185,7 +185,7 @@ public class GraphQLMappingExporter implements ApplicationRunner {
         List<String> args = new ArrayList<>();
         for (Parameter param : method.getParameters()) {
             if (!param.isAnnotationPresent(Argument.class)) continue;
-            String name = param.getAnnotation(Argument.class).name();
+            String name = Objects.requireNonNull(param.getAnnotation(Argument.class)).name();
             if (name.isEmpty()) name = param.getName();
             args.add(name + ": " + resolveTypeFromParameter(param));
         }
