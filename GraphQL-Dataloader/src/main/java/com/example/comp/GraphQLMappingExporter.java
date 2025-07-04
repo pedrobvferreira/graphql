@@ -292,7 +292,6 @@ public class GraphQLMappingExporter implements ApplicationRunner {
         if (type == Integer.class || type == int.class) return "Int";
         if (type == Boolean.class || type == boolean.class) return "Boolean";
         if (type == Double.class || type == double.class || type == Float.class || type == float.class) return "Float";
-        if (type.isEnum()) return type.getSimpleName();
         return type.getSimpleName();
     }
 
