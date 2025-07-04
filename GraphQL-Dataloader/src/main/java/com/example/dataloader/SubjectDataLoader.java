@@ -1,6 +1,7 @@
 package com.example.dataloader;
 
 import com.example.response.SubjectResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +12,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class SubjectDataLoader implements MappedBatchLoader<Long, List<SubjectResponse>> {
 
     @Override
     public CompletionStage<Map<Long, List<SubjectResponse>>> load(Set<Long> studentIds) {
+        log.info(Thread.currentThread().getName());
         Map<Long, List<SubjectResponse>> subjectsMap = Map.of(
                 1L, List.of(
                         new SubjectResponse(1L, "JAVA", 90.0),
